@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Cup 2027 Cricket Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-bg"></div>
+
+  <header class="topbar">
+    <div>
+      <h1>World Cup 2027 Cricket Simulator</h1>
+      <p class="subtitle">Build your XI. Win matches. Earn trophies. Rule the world stage.</p>
+    </div>
+    <div class="top-actions">
+      <div id="currentProfileLabel" class="user-pill">No Profile Selected</div>
+      <button id="saveBtn" class="btn ghost">Save</button>
+      <button id="loadBtn" class="btn ghost">Load</button>
+      <button id="resetBtn" class="btn primary">Reset</button>
+    </div>
+  </header>
+
+  <div id="celebrationBanner" class="celebration-banner hidden"></div>
+
+  <section class="profile-shell">
+    <div class="profile-card">
+      <div class="profile-copy">
+        <span class="showcase-kicker">Player Profiles</span>
+        <h2>Create or choose a local profile and keep separate tournament progress on this device.</h2>
+        <p>Useful for multiple players on one laptop. Each profile gets its own saved progress, rewards, and tournament run.</p>
+        <div class="profile-note">Progress is saved on this device only.</div>
+        <div id="profileMessage" class="auth-message hidden"></div>
+      </div>
+
+      <div class="profile-panel">
+        <div class="auth-tabs">
+          <button id="showSelectProfileBtn" class="auth-tab active" type="button">Select Profile</button>
+          <button id="showCreateProfileBtn" class="auth-tab" type="button">Create Profile</button>
+        </div>
+
+        <form id="selectProfileForm" class="auth-form">
+          <label>
+            <span>Choose Profile</span>
+            <select id="profileSelect" class="auth-input"></select>
+          </label>
+          <button class="btn primary wide" type="submit">Use Profile</button>
+        </form>
+
+        <form id="createProfileForm" class="auth-form hidden">
+          <label>
+            <span>Profile Name</span>
+            <input id="createProfileName" class="auth-input" type="text" placeholder="Enter profile name" required />
+          </label>
+          <button class="btn primary wide" type="submit">Create Profile</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase">
+    <article class="showcase-hero pull-up">
+      <div class="showcase-copy">
+        <span class="showcase-kicker">World Stage</span>
+        <h2>10 nations, one title, one chase that can change everything.</h2>
+        <p>Built around a bigger tournament feel, the simulator now opens with stadium energy, trophy pressure, and match-day presentation before you even play the first ball.</p>
+      </div>
+      <div class="showcase-hero-art">
+        <img src="./assets/title-banner.jpeg" alt="World Cup 2027 title artwork">
+        <img class="showcase-logo pull-up" src="./assets/logo-crest.png" alt="World Cup 2027 crest">
+      </div>
+    </article>
+  </section>
+
+  <main class="layout">
+    <section class="panel left-panel">
+      <div class="panel-head">
+        <h2>Team Setup</h2>
+      </div>
+
+      <div class="panel-body">
+        <div class="field">
+          <label for="teamSelect">Choose Team</label>
+          <select id="teamSelect"></select>
+        </div>
+
+        <div class="selected-team-card">
+          <div id="selectedTeamBadge" class="team-badge big">🇮🇳</div>
+          <div>
+            <div id="selectedTeamName" class="selected-team-name">India</div>
+            <div class="muted">Tournament campaign active</div>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-top">
+            <div>
+              <div class="small-label">Profile Progress</div>
+              <div id="profileLevel" class="progress-main">0 XP</div>
+            </div>
+            <div class="reward-pills">
+              <span id="coinsValue" class="reward-pill">🪙 0</span>
+              <span id="xpValue" class="reward-pill">⭐ 0 XP</span>
+              <span id="streakValue" class="reward-pill">🔥 0</span>
+              <span id="trophyValue" class="reward-pill">🏆 0</span>
+            </div>
+          </div>
+          <div class="xp-track">
+            <div id="xpFill" class="xp-fill"></div>
+          </div>
+        </div>
+
+        <div class="subhead">
+          <h3>15-Man Squad</h3>
+          <span id="selectedCount">0 / 11 selected</span>
+        </div>
+
+        <div id="squadList" class="squad-list"></div>
+
+        <div class="button-row">
+          <button id="autoXiBtn" class="btn ghost">Auto Pick XI</button>
+          <button id="lockXiBtn" class="btn primary">Lock Playing XI</button>
+          <button id="unlockXiBtn" class="btn ghost">Unlock Playing XI</button>
+        </div>
+
+        <div class="subhead">
+          <h3>Chosen Playing XI</h3>
+        </div>
+        <div id="playingXi" class="chips-wrap"></div>
+
+        <div class="card legends-card">
+          <div class="subhead">
+            <h3>Legends Market</h3>
+            <span class="muted">Unlock with coins and XP</span>
+          </div>
+          <div id="legendsMarket" class="legends-market"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel center-panel">
+      <div class="panel-head">
+        <h2>Match Center</h2>
+      </div>
+
+      <div class="panel-body">
+        <div id="preMatchScreen" class="card">
+          <div class="small-tag-row">
+            <span class="tag" id="preStage">League Match</span>
+            <span class="tag alt" id="preIndex">1 / 9</span>
+          </div>
+          <h3 id="preFixture">Choose a team and XI first</h3>
+          <p id="preDesc" class="muted">Start your tournament when ready.</p>
+          <button id="startBtn" class="btn primary wide">Start Tournament</button>
+        </div>
+
+        <div id="inningsInfoScreen" class="card hidden">
+          <div class="small-tag-row">
+            <span class="tag">Match Setup</span>
+          </div>
+          <h3 id="inningsFixture">India vs Australia</h3>
+          <div id="tossInfo" class="muted toss-info">Toss result will appear here</div>
+          <div id="conditionsInfo" class="muted toss-info">Conditions will appear here</div>
+          <div class="innings-grid">
+            <div class="innings-card">
+              <h4>1st Innings Setup</h4>
+              <div id="inningsSummary" class="innings-summary">Waiting...</div>
+            </div>
+            <div class="innings-card">
+              <h4>Match Plan</h4>
+              <div id="chaseBrief" class="innings-summary">Waiting...</div>
+            </div>
+          </div>
+          <button id="beginChaseBtn" class="btn primary wide">Start Match</button>
+        </div>
+
+        <div id="liveScreen" class="hidden">
+          <div class="hero-card">
+            <div class="hero-left">
+              <div class="small-tag-row">
+                <span class="tag" id="liveStage">League Match</span>
+                <span class="tag alt" id="liveIndex">1 / 9</span>
+                <span class="tag" id="phaseBadge">Powerplay</span>
+              </div>
+              <h3 id="liveFixture">India vs Australia</h3>
+              <p class="muted" id="targetLine">Target: 300</p>
+            </div>
+
+            <div class="hero-team-strip">
+              <div class="mini-team">
+                <div id="userMiniBadge" class="team-badge">🇮🇳</div>
+                <span id="userMiniCode">IND</span>
+              </div>
+              <span class="vs-text">vs</span>
+              <div class="mini-team">
+                <div id="oppMiniBadge" class="team-badge">🇦🇺</div>
+                <span id="oppMiniCode">AUS</span>
+              </div>
+            </div>
+
+            <div class="confidence-box">
+              <div class="confidence-ring" id="confidenceRing">
+                <span id="confidenceValue">50</span>
+              </div>
+              <div id="confidenceLabel" class="confidence-label">Settled</div>
+            </div>
+          </div>
+
+          <div class="score-grid">
+            <div class="stat-card glow-a">
+              <span class="stat-label">Score</span>
+              <span class="stat-value" id="scoreMain">0/0</span>
+            </div>
+            <div class="stat-card glow-b">
+              <span class="stat-label">Overs</span>
+              <span class="stat-value" id="oversMain">0.0</span>
+            </div>
+            <div class="stat-card glow-c">
+              <span class="stat-label" id="dynamicLabelA">Runs Needed</span>
+              <span class="stat-value" id="runsNeeded">300</span>
+            </div>
+            <div class="stat-card glow-d">
+              <span class="stat-label">Balls Left</span>
+              <span class="stat-value" id="ballsLeft">300</span>
+            </div>
+          </div>
+
+          <div class="mode-row">
+            <button class="mode-btn active" data-mode="balanced">Balanced</button>
+            <button class="mode-btn" data-mode="aggressive">Aggressive</button>
+            <button class="mode-btn" data-mode="defensive">Defensive</button>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <h4>Current Batters</h4>
+              <div id="battersBox" class="batters-box"></div>
+            </div>
+
+            <div class="card">
+              <h4>Current Bowler</h4>
+              <div id="bowlerBox" class="bowler-box"></div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <h4>Shot Engine</h4>
+              <div id="probBars"></div>
+            </div>
+
+            <div class="card">
+              <h4>Recent Balls</h4>
+              <div id="recentBalls" class="recent-balls"></div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="nextBallBtn" class="btn primary">Next Ball</button>
+            <button id="simulateOverBtn" class="btn ghost">Simulate Over</button>
+            <button id="simulateInningsBtn" class="btn ghost">Simulate Innings</button>
+          </div>
+
+          <div class="card">
+            <h4>Live Commentary</h4>
+            <div id="commentaryBox" class="commentary-box"></div>
+          </div>
+
+          <div class="card">
+            <h4>Innings Scorecard</h4>
+            <div id="scorecardBox" class="table-wrap"></div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <h4>Bowling Scorecard</h4>
+              <div id="bowlingScorecardBox" class="table-wrap"></div>
+            </div>
+            <div class="card">
+              <h4>Fall of Wickets</h4>
+              <div id="fallOfWicketsBox" class="list-box muted">No wickets yet.</div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <h4>Partnerships</h4>
+              <div id="partnershipsBox" class="table-wrap"></div>
+            </div>
+            <div class="card">
+              <h4>Manhattan Chart</h4>
+              <div id="manhattanChart" class="chart-wrap"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>Worm Chart</h4>
+            <div id="wormChart" class="chart-wrap worm-wrap"></div>
+          </div>
+
+          <div class="card">
+            <h4>Real Talk</h4>
+            <div id="realTalkBox" class="real-talk">
+              Start calm. Build innings. Don’t throw it away.
+            </div>
+          </div>
+        </div>
+
+        <div id="resultScreen" class="card hidden">
+          <div class="small-tag-row">
+            <span class="tag trophy">Match Result</span>
+          </div>
+          <h3 id="resultTitle">Result</h3>
+          <div id="resultRewards" class="result-rewards"></div>
+          <div id="resultPerformance" class="result-performance"></div>
+          <button id="continueBtn" class="btn primary wide">Continue</button>
+        </div>
+
+        <div id="postScreen" class="card hidden">
+          <div class="small-tag-row">
+            <span class="tag trophy">Tournament Complete</span>
+          </div>
+          <h3 id="winnerTitle">Winner: TBD</h3>
+          <div id="ceremonyStage" class="ceremony-stage"></div>
+          <div id="knockoutSummary" class="knockout-summary"></div>
+          <div id="trophyCabinet" class="result-performance"></div>
+          <div class="button-row">
+            <button id="restartTournamentBtn" class="btn primary wide">Restart Tournament</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel right-panel">
+      <div class="panel-head">
+        <h2>Tournament Tracker</h2>
+      </div>
+
+      <div class="panel-body">
+        <div class="card">
+          <h4>Match History</h4>
+          <div id="scheduleList" class="schedule-list"></div>
+        </div>
+
+        <div class="card">
+          <h4>Points Table</h4>
+          <div id="pointsTable" class="table-wrap"></div>
+        </div>
+
+        <div class="card">
+          <h4 id="mostRunsTitle">Most Runs in Tournament</h4>
+          <div id="mostRunsBox" class="table-wrap"></div>
+        </div>
+
+        <div class="card">
+          <h4>Career Records</h4>
+          <div id="careerRecordsBox" class="table-wrap"></div>
+        </div>
+
+        <div class="card">
+          <h4>Match Details</h4>
+          <div id="matchDetailsBox" class="match-details-box muted">Click any played match to open full stats.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
