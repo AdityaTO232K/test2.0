@@ -11,7 +11,7 @@ const RUN_REWARDS = {
   6: { coins: 100, xp: 50 }
 };
 
-const LEGENDS_BY_TEAM = window.LEGENDS_BY_TEAM || {};
+const LEGENDS_DATA = window.LEGENDS_BY_TEAM || {};
 
 function createInitialState(){
   return {
@@ -335,7 +335,7 @@ function initPoints(){
 }
 
 function getTeamLegendPool(team){
-  return Array.isArray(LEGENDS_BY_TEAM[team]) ? LEGENDS_BY_TEAM[team] : [];
+  return Array.isArray(LEGENDS_DATA[team]) ? LEGENDS_DATA[team] : [];
 }
 
 function getLegendId(team, playerName){
@@ -347,6 +347,7 @@ function getUnlockedLegendsForTeam(team){
 }
 
 function getCurrentSquad(){
+  if(!state.userTeam) return [];
   return [...SQUADS[state.userTeam], ...getUnlockedLegendsForTeam(state.userTeam)];
 }
 
@@ -377,8 +378,10 @@ function initTournamentStatsForTeam(){
 
 function buildTeamSelect(){
   els.teamSelect.innerHTML = TEAM_NAMES.map(code => `<option value="${code}">${TEAM_FULL[code]}</option>`).join("");
-  state.userTeam = els.teamSelect.value;
+  state.userTeam = els.teamSelect.value || TEAM_NAMES[0];
+  els.teamSelect.value = state.userTeam;
   renderSquad();
+  renderPlayingXI();
 }
 
 function bindEvents(){
@@ -408,7 +411,7 @@ function bindEvents(){
 
   els.teamSelect.addEventListener("change", () => {
     if(state.started) return;
-    state.userTeam = els.teamSelect.value;
+    state.userTeam = els.teamSelect.value || TEAM_NAMES[0];
     state.userXI = [];
     state.lockedXI = false;
     initTournamentStatsForTeam();
@@ -515,7 +518,9 @@ function updateSelectedCount(){
 function autoPickXI(){
   if(state.started || state.lockedXI) return;
   const squad = getCurrentSquad();
-  const bat = [], ar = [], bowl = [];
+  const bat = [];
+  const ar = [];
+  const bowl = [];
 
   squad.forEach((p, idx) => {
     if(p.role === "batsman") bat.push({ idx, rating: p.rating });
@@ -546,6 +551,7 @@ function renderPlayingXI(){
 
   els.playingXi.innerHTML = state.userXI.map(idx => {
     const p = squad[idx];
+    if(!p) return "";
     return `<div class="chip">${p.name} <span class="muted">(${prettyRole(p.role)} • ${p.rating})</span></div>`;
   }).join("");
 }
@@ -636,7 +642,7 @@ function renderLegendsMarket(){
 
   const legends = getTeamLegendPool(state.userTeam);
   if(!legends.length){
-    els.legendsMarket.innerHTML = `<div class="muted">Legends will appear here after you add them in data.js.</div>`;
+    els.legendsMarket.innerHTML = `<div class="muted">No legends available yet.</div>`;
     return;
   }
 
@@ -1661,10 +1667,6 @@ function renderCareerRecords(){
   `;
 }
 
-function topScore(){
-  return Math.max(...state.liveMatch.battingOrder.map(p => p.runs));
-}
-
 function showMatchResult(){
   const m = state.liveMatch;
   els.liveScreen.classList.add("hidden");
@@ -2376,7 +2378,7 @@ function loadGame(){
 }
 
 function syncUIFromLoadedState(){
-  els.teamSelect.value = state.userTeam;
+  els.teamSelect.value = state.userTeam || TEAM_NAMES[0];
   updateProfileUI();
 
   if(!Array.isArray(state.otherLeagueRounds) || state.otherLeagueRounds.length === 0){
